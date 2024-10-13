@@ -1,0 +1,5 @@
+Timestamp,Cardholder,Card Data,Type
+2024-10-13 06:40:50,John Doe,2435435435435,entry
+2024-10-13 08:41:04,John Doe,2435435435435,exit
+2024-10-13 08:43:56,James Doe,4536543654733,entry
+2024-10-13 12:43:56,James Doe,4536543654733,exit
