@@ -1,0 +1,5 @@
+# Ignore the attendance log file
+attendance_log.csv
+
+# Ignore any other CSV files (optional)
+*.csv
