@@ -46,14 +46,14 @@ Example Workflow
 Welcome! You can swipe your card at any time by entering your card data.
 Type 'view' to view hours, 'exit' to quit the program.
 
-Enter card data (or 'view'/'exit'): 1226137070
-entry recorded for Siddharth at 2024-10-13 14:20:45
+Enter card data (or 'view'/'exit'): 34535345345
+entry recorded for Demo at 2024-10-13 14:20:45
 
-Enter card data (or 'view'/'exit'): 1226137070
-exit recorded for Siddharth at 2024-10-13 16:35:12
+Enter card data (or 'view'/'exit'): 34535345345
+exit recorded for Demo at 2024-10-13 16:35:12
 
 Enter card data (or 'view'/'exit'): view
-Enter card data to view hours: 1226137070
+Enter card data to view hours: 34535345345
 
 Hours worked in the last 7 days:
 Day 0: 2.50 hours
@@ -75,19 +75,12 @@ Card Data: The 10-digit card number used during the swipe.
 Type: Indicates whether the swipe is an "entry", "exit", or "error" (for unknown cardholders).
 Example Log Entry
 
-2024-10-13 14:20:45,Siddharth,1226137070,entry
-2024-10-13 16:35:12,Siddharth,1226137070,exit
-2024-10-14 09:00:00,Unknown Cardholder,1234567890,error
+2024-10-13 14:20:45,Test,423423423423,entry
+2024-10-13 16:35:12,Test,43242342342423,exit
+2024-10-14 09:00:00,Unknown Cardholder,25255245454,error
 
 ## Customization
 You can easily modify the list of valid cardholders by editing the cardholders array in the source code. Simply add or remove cardholder records as needed.
-
-struct Cardholder cardholders[] = {
-    {"1226137070", "Siddharth"},
-    {"1229560633", "Narain"},
-    {"1228930549", "Shrey"},
-    {"1222313196", "Riyank"}
-};
 
 ## Future Enhancements
 
