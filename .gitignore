@@ -3,3 +3,5 @@ attendance_log.csv
 
 # Ignore any other CSV files (optional)
 *.csv
+attendance_log.csv
+attendance_log.csv
