@@ -30,7 +30,9 @@ struct Cardholder cardholders[] = {
      {"1229560633", "Narain"},
      {"1229581862", "Sujith"},
      {"1229544344", "Aditya"},
-     {"1229714371", "Vikram"}
+     {"1229714371", "Vikram"},
+     {"1229624957", "Ankit"},
+     {"1228930549", "Shrey"}
 };
 int cardholder_count = sizeof(cardholders) / sizeof(cardholders[0]);
 
@@ -121,11 +123,11 @@ void log_attendance(const char *card_data) {
         strcpy(swipe_type, "entry");
     }
 
-    // Prevent consecutive same type swipes
-    if (strcmp(last_swipe_type, swipe_type) == 0) {
-        printf("Swipe ignored: Consecutive swipes of the same type ('%s') for %s\n", swipe_type, cardholder);
-        return;
-    }
+    // // Prevent consecutive same type swipes
+    // if (strcmp(last_swipe_type, swipe_type) == 0) {
+    //     printf("Swipe ignored: Consecutive swipes of the same type ('%s') for %s\n", swipe_type, cardholder);
+    //     return;
+    // }
 
     // Log the new swipe with the current timestamp
     file = fopen(ATTENDANCE_LOG_FILE, "a");
