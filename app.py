@@ -2,7 +2,29 @@ from flask import Flask, render_template, jsonify
 import csv
 from datetime import datetime
 
+from flask import Flask, jsonify, render_template
+from flask_httpauth import HTTPBasicAuth
+
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+# Hardcoded username and password (for demo purposes)
+USERS = {
+    "admin": "Elibomasu@01",  # Change this to a more secure password
+}
+
+@auth.get_password
+def get_password(username):
+    if username in USERS:
+        return USERS[username]
+    return None
+
+@auth.error_handler
+def unauthorized():
+    return jsonify({"error": "Unauthorized access"}), 401
+
+
+
 
 # Helper function to read and parse the CSV file
 def read_attendance_csv():
@@ -42,8 +64,11 @@ def process_attendance_data(attendance_data):
     
     return grouped_logs
 
+# Protect the index route with Basic Authentication
 @app.route('/')
+@auth.login_required
 def index():
+    # Render template or return some protected resource
     attendance_data = read_attendance_csv()
     grouped_logs = process_attendance_data(attendance_data)
     return render_template('index.html', grouped_logs=grouped_logs)
