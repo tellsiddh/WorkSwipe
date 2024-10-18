@@ -40,13 +40,35 @@
             <tr>
                 <td colspan="4">
                     <div class="daily-details">
-                        <h4>Daily Entry and Exit Times</h4>
-                        {% for log in data.logs %}
-                        <p>
-                            <strong>{{ log.Type.capitalize() }}:</strong>
-                            {{ log.Timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
-                        </p>
-                        {% endfor %}
+                        <h4>Daily Entry, Exit Times, and Hours</h4>
+                        <table class="daily-hours-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Entry Time</th>
+                                    <th>Exit Time</th>
+                                    <th>Daily Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for date, logs in data.daily_hours.items() %}
+                                <tr>
+                                    <td>{{ date }}</td>
+                                    <td>
+                                        {% for log in data.logs if log['Type'] == 'entry' and log['Timestamp'].date() == date %}
+                                            {{ log.Timestamp.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for log in data.logs if log['Type'] == 'exit' and log['Timestamp'].date() == date %}
+                                            {{ log.Timestamp.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ logs }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </td>
             </tr>
