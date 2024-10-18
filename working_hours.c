@@ -58,6 +58,7 @@ void log_attendance(const char *card_data) {
     char cardholder[MAX_CARDHOLDER_NAME_LEN];
     char last_swipe_type[6] = "";
     char log_card_data[11];
+    char log_cardholder[MAX_CARDHOLDER_NAME_LEN];
     char log_line[MAX_LOG_LINE_LEN];
     FILE *file;
 
@@ -95,9 +96,10 @@ void log_attendance(const char *card_data) {
     file = fopen(ATTENDANCE_LOG_FILE, "r");
     if (file) {
         while (fgets(log_line, sizeof(log_line), file)) {
-            // Use a separate timestamp (log_timestamp) for reading previous entries, not the current timestamp
-            sscanf(log_line, "%19[^,],%*[^,],%10[^,],%5s", log_timestamp, log_card_data, last_swipe_type);
-            if (strcmp(log_card_data, card_data) == 0) {
+            // Read log entry: log_timestamp, log_cardholder, log_card_data, and last_swipe_type
+            sscanf(log_line, "%19[^,],%49[^,],%10[^,],%5s", log_timestamp, log_cardholder, log_card_data, last_swipe_type);
+            if (strcmp(log_card_data, card_data) == 0 && strcmp(log_cardholder, cardholder) == 0) {
+                // Check for the same cardholder and card data
                 strptime(log_timestamp, "%Y-%m-%d %H:%M:%S", &last_swipe_time);
                 last_swipe_epoch = mktime(&last_swipe_time);
             }
@@ -139,6 +141,7 @@ void log_attendance(const char *card_data) {
         printf("Error: Could not write to attendance log.\n");
     }
 }
+
 
 
 int main() {
