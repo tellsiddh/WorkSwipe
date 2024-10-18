@@ -34,45 +34,53 @@ def ensure_log_file():
 
 # Log attendance data to the log file
 def log_attendance(card_data):
-    current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    cardholder = "Unknown Cardholder"
+    try:
+        current_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cardholder = "Unknown Cardholder"
 
-    # Find the cardholder based on card_data
-    found = False
-    for holder in cardholders:
-        if card_data == holder["card_data"]:
-            cardholder = holder["name"]
-            found = True
-            break
+        # Find the cardholder based on card_data
+        found = False
+        for holder in cardholders:
+            if card_data == holder["card_data"]:
+                cardholder = holder["name"]
+                found = True
+                break
 
-    if not found:
+        if not found:
+            with open(ATTENDANCE_LOG_FILE, "a") as file:
+                file.write(f"{current_timestamp},{cardholder},{card_data},entry\n")
+            print(f"Unknown cardholder swipe recorded for card data: {card_data} at {current_timestamp}")
+            return
+
+        # Check the last swipe for the same cardholder
+        last_swipe_time = None
+        last_swipe_type = ""
+
+        with open(ATTENDANCE_LOG_FILE, "r") as file:
+            for line in file:
+                try:
+                    log_timestamp, log_cardholder, log_card_data, log_type = line.strip().split(',')
+                    if log_card_data == card_data and log_cardholder == cardholder:
+                        last_swipe_time = datetime.strptime(log_timestamp, "%Y-%m-%d %H:%M:%S")
+                        last_swipe_type = log_type
+                except ValueError:
+                    # If there's a parsing error, skip the problematic line and continue
+                    continue
+
+        current_time = datetime.now()
+
+        # Determine the swipe type (entry/exit)
+        swipe_type = "entry"
+        if last_swipe_time and last_swipe_time.date() == current_time.date():
+            swipe_type = "exit" if last_swipe_type == "entry" else "entry"
+
+        # Log the new swipe
         with open(ATTENDANCE_LOG_FILE, "a") as file:
-            file.write(f"{current_timestamp},{cardholder},{card_data},entry\n")
-        print(f"Unknown cardholder swipe recorded for card data: {card_data} at {current_timestamp}")
-        return
+            file.write(f"{current_timestamp},{cardholder},{card_data},{swipe_type}\n")
+        print(f"{swipe_type} recorded for {cardholder} at {current_timestamp}")
 
-    # Check the last swipe for the same cardholder
-    last_swipe_time = None
-    last_swipe_type = ""
-
-    with open(ATTENDANCE_LOG_FILE, "r") as file:
-        for line in file:
-            log_timestamp, log_cardholder, log_card_data, log_type = line.strip().split(',')
-            if log_card_data == card_data and log_cardholder == cardholder:
-                last_swipe_time = datetime.strptime(log_timestamp, "%Y-%m-%d %H:%M:%S")
-                last_swipe_type = log_type
-
-    current_time = datetime.now()
-
-    # Determine the swipe type (entry/exit)
-    swipe_type = "entry"
-    if last_swipe_time and last_swipe_time.date() == current_time.date():
-        swipe_type = "exit" if last_swipe_type == "entry" else "entry"
-
-    # Log the new swipe
-    with open(ATTENDANCE_LOG_FILE, "a") as file:
-        file.write(f"{current_timestamp},{cardholder},{card_data},{swipe_type}\n")
-    print(f"{swipe_type} recorded for {cardholder} at {current_timestamp}")
+    except Exception as e:
+        print(f"Error logging attendance for card {card_data}: {e}")
 
 # Main function to capture input from the device
 def capture_input():
@@ -92,16 +100,22 @@ def capture_input():
 
     card_data = ""
     for event in dev.read_loop():
-        if event.type == evdev.ecodes.EV_KEY and event.value == 1:  # Key press event
-            key_event = evdev.categorize(event)
-            if key_event.keycode.startswith("KEY_"):
-                key = key_event.keycode.replace("KEY_", "")
-                if key.isdigit():
-                    card_data += key
-                elif key == "ENTER":
-                    log_attendance(card_data)
-                    card_data = ""  # Reset card data for the next swipe
+        try:
+            if event.type == evdev.ecodes.EV_KEY and event.value == 1:  # Key press event
+                key_event = evdev.categorize(event)
+                if key_event.keycode.startswith("KEY_"):
+                    key = key_event.keycode.replace("KEY_", "")
+                    if key.isdigit():
+                        card_data += key
+                    elif key == "ENTER":
+                        log_attendance(card_data)
+                        card_data = ""  # Reset card data for the next swipe
+        except Exception as e:
+            print(f"Error reading input event: {e}")
         time.sleep(0.01)
 
 if __name__ == "__main__":
-    capture_input()
+    try:
+        capture_input()
+    except KeyboardInterrupt:
+        print("Program interrupted by user")

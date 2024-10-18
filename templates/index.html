@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Log</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Attendance Log</h1>
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>Cardholder</th>
+                <th>Entry Time</th>
+                <th>Exit Time</th>
+                <th>Hours Worked (Total)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cardholder, data in grouped_logs.items() %}
+            <tr>
+                <td>{{ cardholder }}</td>
+                <td>
+                    {% if data.entries %}
+                        {{ data.entries[0].strftime('%Y-%m-%d %H:%M:%S') }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if data.exits %}
+                        {{ data.exits[-1].strftime('%Y-%m-%d %H:%M:%S') }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ data.total_hours }}</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <div class="daily-details">
+                        <h4>Daily Entry and Exit Times</h4>
+                        {% for log in data.logs %}
+                        <p>
+                            <strong>{{ log.Type.capitalize() }}:</strong>
+                            {{ log.Timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
